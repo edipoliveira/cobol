@@ -1,0 +1,61 @@
+//**********************************************************************
+//* DELETE OUTPUT FILES
+//**********************************************************************
+//DELETA01 EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+  DELETE OUTPUT.FILE
+
+  SET LASTCC = 0
+  SET MAXCC  = 0
+//*
+//*--------------------------------------------------------------------*
+//STEP1    EXEC PGM=INSYNC,PARM=MVS,REGION=8M
+//STEPLIB  DD DISP=SHR,DSN=LIBRARY SMINLOAD OF INSYNC
+//*
+//#ELIBDD  DD DISP=SHR,DSN=LIBRARY SMINEXEC OF INSYNC
+//SYSTSPRT DD SYSOUT=*
+//#LOG     DD SYSOUT=*
+//#PRINT   DD SYSOUT=*
+//#STATS   DD SYSOUT=*
+//#INDD    DD DSN=INPUT.FILE,DISP=SHR
+//#OUTDD   DD DSN=OUTPUT.FILE,
+//         DISP=(,CATLG,DELETE),                                            0000
+//         DCB=(BLKSIZE=0,LRECL=2000,RECFM=VB),UNIT=%%WORK,                 0000
+//         SPACE=(TRK,(10,10),RLSE)                                         0000
+//**********************************************************************
+//* ITS NOT RULES, ONLY TIPS
+//**********************************************************************
+//* OBS 1 :
+//* IF CSVINCLUDEHEADER=NO  ALWAYS SET RECGM TO FB
+//* IF CSVINCLUDEHEADER=YES ALWAYS SET RECGM TO VB
+//* OBS 2 :
+//* REMEMBER THAT DELIMITED CHARACTER WILL BE INSERTED IN OUTPUT FILE
+//* THAN THE LRECL WONT BE EQUAL OF THE INPUT FILE
+//* OBS 3 :
+//* QUANDO EXIBIDOS OS CAMPOS DA COPY NO CABECALHO DO ARQUIVO, O
+//* TAMANHO DO PRIMEIRO REGISTRO SERA MAIOR QUE OS DEMAIS, COM ISSO
+//* O LRECL DO ARQUIVO DEVERA SER INCREMENTADO
+//**********************************************************************
+//SYSIN    DD *                                                             0000
+//#PARM    DD *
+FUNCTION=EXTRACT
+INDD=#INDD
+OUTDD=#OUTDD
+RDW=ON
+REPLACEDUPS=NO
+CSVDELIM=;                  *CARACTER DELIMITADOR
+CSVQUOTE=SINGLE
+CSVQUOTECHARS=NO            *INSERE ' ANTES E DEPOIS DOS CAMPOS PIC X
+CSVQUOTENUMS=NO             *INSERE ' ANTES E DEPOIS DOS CAMPOS PIC 9
+CSVLEADINGBLANKS=YES
+CSVTRAILINGBLANKS=YES       *EXIBE ESPACOS A DIREITA SE EXISTIR NO ARQ
+CSVLEADINGZEROS=NO
+CSVEXCLUDEFILLER=YES        *EXIBE OS CAMPOS FILLER
+CSVINCLUDEHEADER=NO         *EXIBE CAMPOS DA COPY COMO CABECALHO/HEADER
+ADDTOOUTPUT=NO
+LINESPERPAGE=080
+FORMATDSN=(D.SER19.TRODRIGO)     *PDS ONDE A COPY ESTA ALOCADA
+FORMATMBR=(BOOKINGR)             *COPY (PODE TER COMENTARIO NO ARQ)
+//*
+//
