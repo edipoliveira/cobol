@@ -1,0 +1,44 @@
+//**********************************************************************
+//*   UNLOAD FROM SOME DB2 TABLE
+//**********************************************************************
+//DELETE00 EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+   DELETE  NAME.OF.OUTPUT.FILE
+   SET LASTCC = 0
+   SET MAXCC  = 0
+//*------------------------------------------------------------------*
+//* UNLOAD OF SOME DB2 TABLE PUTTING ';' BETWEEN EACH COLUMN VALUES  *
+//* LIKE CSV FORMAT                                                  *
+//* WHEN YOU USE THE DELIMITED FUNCTION ALL THE PROPERTIES WILL BE   *
+//* SET BY DEFAULT. YOU CAN CHANGE ONE, TWO OR ALL                   *
+//* DEFAULT VALUES:                                                  *
+//*         - COLDEL IS ',' COMMA                                    *
+//*         - CHARDEL IS '"' DOUBLE QUOTTA                           *
+//*         - DECPT IS '.' DOT                                       *
+//*------------------------------------------------------------------*
+//UNLOAD00 EXEC  PGM=DSNUTILB,PARM='%%DB2,STEP_NAME'
+//*STEP_NAME = IN MY JOB IS UNLOAD00
+//STEPLIB  DD  DSN=%%DB2.SDSNEXIT,DISP=SHR
+//         DD  DSN=%%DB2.SDSNLOAD,DISP=SHR
+//SYSUT1   DD  SYSOUT=*
+//SORTOUT  DD  SYSOUT=*
+//SYSDISC  DD  SYSOUT=*
+//SYSERR   DD  SYSOUT=*
+//SYSMAP   DD  SYSOUT=*
+//SYSREC   DD  DSN=NAME.OF.OUTPUT.FILE,
+//             DISP=(,CATLG,DELETE),
+//            UNIT=%%UNIT,DCB=(RECFM=FB),
+//            SPACE=(TRK,(80000,80000),RLSE),BUFNO=60
+//SYSIN    DD *
+ UNLOAD FROM TABLE OWNER.TABLE_NAME
+    DELIMITED COLDEL ';' CHARDEL X'40' DECPT '.'
+//* DELIMITED COLDEL ';'
+//* DELIMITED CHARDEL '*' 
+//* IMPORTANT TIP = ALWAYS SET CHARDEL X'40' (IT'S SPACE HEXADECIMAL)*
+//* BECAUSE CHARDEL PUT THE CHARACTER CHOOSED BEFORE AND AFTER ALL   *
+//* STRING FIELD
+//* DELIMITED DECPT '!'
+//SYSPRINT DD  SYSOUT=*
+//UTPRINT  DD  SYSOUT=*
+//SYSOUT   DD  SYSOUT=*

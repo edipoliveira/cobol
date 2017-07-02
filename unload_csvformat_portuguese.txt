@@ -1,0 +1,45 @@
+//**********************************************************************
+//*   UNLOAD TABELA DB2
+//**********************************************************************
+//DELETE00 EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+   DELETE  NOME.ARQUIVO.DE.SAIDA
+   SET LASTCC = 0
+   SET MAXCC  = 0
+//*------------------------------------------------------------------*
+//* UNLOAD DAS TABELAS COLOCANDO COMO SEPARADOR DE COLUNAS O CRC ';' *
+//* GERANDO ASSIM UM ARQUIVO NO FORMATO CSV                          *
+//* QUANDO ESCOLHIDA A FUNCAO DELIMITED TODAS AS PROPRIEDADES        *
+//* ASSUMIRAO OS VALORES PADROES. VOCE PODE ALTERAR UM, DOIS OU TODOS*
+//* VALORES PADRAO:                                                  *
+//*         - COLDEL EH ',' VIRGULA                                  *
+//*         - CHARDEL EH '"' ASPAS DUPLAS                            *
+//*         - DECPT EH '.' PONTO                                     *
+//*------------------------------------------------------------------*
+//UNLOAD00 EXEC  PGM=DSNUTILB,PARM='%%DB2,NOME_STEP'
+//* NOME_STEP = NESSE EXEMPLO EH UNLOAD00
+//STEPLIB  DD  DSN=%%DB2.SDSNEXIT,DISP=SHR
+//         DD  DSN=%%DB2.SDSNLOAD,DISP=SHR
+//SYSUT1   DD  SYSOUT=*
+//SORTOUT  DD  SYSOUT=*
+//SYSDISC  DD  SYSOUT=*
+//SYSERR   DD  SYSOUT=*
+//SYSMAP   DD  SYSOUT=*
+//SYSREC   DD  DSN=NOME.ARQUIVO.DE.SAIDA,
+//             DISP=(,CATLG,DELETE),
+//            UNIT=%%WORK,DCB=(RECFM=FB),
+//            SPACE=(TRK,(80000,80000),RLSE),BUFNO=60
+//SYSIN    DD *
+ UNLOAD FROM TABLE OWNER.TABELA_DB2
+    DELIMITED COLDEL ';' CHARDEL X'40' DECPT '.'
+//* DELIMITED COLDEL ';'
+//* DELIMITED CHARDEL '*'
+//* DICA IMPORTANTE = SEMPRE ALTERE A PROPRIEDADE CHARDEL PARA X'40' 
+//* ESSE EH O VALOR HEXADECIMAL DE SPACES.
+//* PORQUE A PROPRIEDADE CHARDEL SEMPRE COLOCA O VALOR " ANTES E 
+//* DEPOIS DE TODOS OS CAMPOS CHAR/VARCHAR
+//* DELIMITED DECPT '!'
+//SYSPRINT DD  SYSOUT=*
+//UTPRINT  DD  SYSOUT=*
+//SYSOUT   DD  SYSOUT=*
